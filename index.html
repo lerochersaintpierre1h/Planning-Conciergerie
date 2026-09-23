@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning - Conciergerie</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen select-none" x-data="app()" x-init="initData()">
+
+  <!-- ÉCRAN DE CONNEXION -->
+  <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900" x-cloak>
+    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
+      <div class="text-center mb-6">
+        <h2 class="text-xl font-bold text-slate-800">Espace Conciergerie</h2>
+        <p class="text-xs text-slate-500">Rocher Saint Pierre 1H</p>
+      </div>
+      
+      <form @submit.prevent="login()">
+        <div class="mb-4">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email</label>
+          <input type="email" x-model="loginEmail" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mot de passe</label>
+          <input type="password" x-model="loginPassword" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
+        </div>
+        <p x-show="loginError" class="text-rose-500 text-xs font-bold mb-4 text-center" x-text="loginError"></p>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg shadow transition">Se connecter</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CALENDRIER PRINCIPAL -->
+  <div x-show="isAuthenticated" class="w-full" x-cloak>
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 p-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <h1 class="text-lg font-bold tracking-wide">Planning Rocher Saint Pierre</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2 bg-slate-800 p-1.5 rounded-lg border border-slate-700">
+          <button @click="changeGlobalYear(-1)" class="p-1 rounded hover:bg-slate-700 text-white transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+          <span class="w-14 font-extrabold text-center text-emerald-400 text-sm" x-text="currentYear"></span>
+          <button @click="changeGlobalYear(1)" class="p-1 rounded hover:bg-slate-700 text-white transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+        </div>
+        <button @click="logout()" class="text-slate-400 hover:text-white text-sm font-medium">Déconnexion</button>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 mt-4">
+      <div class="flex flex-wrap items-center gap-6 mb-6 px-2">
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded border border-emerald-500/20" style="background-color: rgba(52, 211, 153, 0.3)"></span><span class="text-sm text-slate-700 font-medium">Libre</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded border border-blue-500/20" style="background-color: rgba(96, 165, 250, 0.4)"></span><span class="text-sm text-slate-700 font-medium">Perso</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded border border-amber-500/20" style="background-color: rgba(251, 191, 36, 0.4)"></span><span class="text-sm text-slate-700 font-medium">Option</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded border border-red-500/20" style="background-color: rgba(248, 113, 113, 0.4)"></span><span class="text-sm text-slate-700 font-medium">Confirmé</span></div>
+        <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded bg-slate-200 border border-slate-300"></span><span class="text-sm text-slate-700 font-medium">Fermé</span></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <template x-for="(month, mIdx) in calendarMonths" :key="mIdx">
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-800 text-white font-bold text-center py-1.5 text-sm capitalize" x-text="month.name"></div>
+            <div class="p-2">
+              <div class="grid grid-cols-7 text-center font-bold text-[10px] text-slate-400 mb-1">
+                <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+              </div>
+              <div class="grid grid-cols-7 gap-1">
+                <template x-for="blank in month.padding"><div class="h-7"></div></template>
+                <template x-for="day in month.days" :key="day.dateStr">
+                  <button 
+                    @click="openClientCard(day)"
+                    class="h-7 w-full rounded flex items-center justify-center text-xs border border-slate-300 focus:outline-none hover:opacity-75"
+                    :style="`background: linear-gradient(to bottom right, ${getColorForRes(day.resMatin, day.isClosed)} 50%, ${getColorForRes(day.resAprem, day.isClosed)} 50%);`"
+                    :title="getDayTooltip(day)">
+                    <span x-text="day.dayNum" class="font-bold text-slate-800"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- MODAL: FICHE CLIENT CONCIERGERIE -->
+      <div x-show="showModalClient" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" x-cloak>
+        <template x-if="selectedRes">
+          <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative">
+            <button @click="showModalClient = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+            
+            <h3 class="text-xl font-bold text-slate-900 mb-1" x-text="selectedRes.nom + ' ' + (selectedRes.prenom || '')"></h3>
+            
+            <div class="mt-4 space-y-3 text-sm text-left">
+              <div class="bg-slate-50 p-3 rounded-lg border">
+                <p class="font-bold text-slate-700">Séjour :</p>
+                <p>Du <span class="font-semibold" x-text="selectedRes.dateDebut ? selectedRes.dateDebut.split('-').reverse().join('/') : ''"></span> au <span class="font-semibold" x-text="selectedRes.dateFin ? selectedRes.dateFin.split('-').reverse().join('/') : ''"></span></p>
+                <p class="text-xs text-slate-500 mt-1" x-text="(selectedRes.nbAdulte || 1) + ' Adultes, ' + (selectedRes.nbEnfant || 0) + ' Enfants'"></p>
+              </div>
+              
+              <div class="bg-slate-50 p-3 rounded-lg border">
+                <p class="font-bold text-slate-700">Options Logement :</p>
+                <p>Ménage payé : <span class="font-semibold" :class="selectedRes.forceMenageNon === 'oui' ? 'text-rose-600' : 'text-emerald-600'" x-text="selectedRes.forceMenageNon === 'oui' ? 'Non (À faire par le client)' : 'Oui (Inclus)'"></span></p>
+                <p>Kit Bébé : <span class="font-semibold uppercase text-sky-600" x-text="selectedRes.kitBebe || 'non'"></span></p>
+              </div>
+              
+              <div class="bg-slate-50 p-3 rounded-lg border">
+                <p class="font-bold text-slate-700">Contact :</p>
+                <p>Téléphone : <span class="font-medium" x-text="selectedRes.telephone || 'Non renseigné'"></span></p>
+                <p>Pays : <span class="font-medium uppercase" x-text="selectedRes.pays || 'Non renseigné'"></span></p>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+              <button @click="showModalClient = false" class="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium">Fermer</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
