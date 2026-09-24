@@ -106,7 +106,7 @@ function app() {
     formatDate(dStr) { return !dStr ? '' : `${dStr.split('-')[2]}/${dStr.split('-')[1]}/${dStr.split('-')[0]}`; },
     calcNights(start, end) { return (!start || !end) ? 0 : Math.max(0, Math.round((new Date(end.split('-')[0], end.split('-')[1] - 1, end.split('-')[2]) - new Date(start.split('-')[0], start.split('-')[1] - 1, start.split('-')[2])) / (1000 * 60 * 60 * 24))); },
 
-    // --- EXPORT PDF INSTANTANÉ (VIA IFRAME ISOLÉE) ---
+    // --- EXPORT PDF INSTANTANÉ AVEC TEXTE CENTRÉ ---
     printPlanning() {
       const nomC = (this.donnees && this.donnees.nomConciergerie) ? this.donnees.nomConciergerie.trim() : 'Conciergerie';
       const fileName = `Planning-Conciergerie-${nomC}-${this.currentYear}`;
@@ -126,11 +126,11 @@ function app() {
 
         rowsHtml += `
           <tr style="${bgStyle}">
-            <td style="border: 1px solid #94a3b8; padding: 2px 4px; font-weight: bold; white-space: nowrap;">${r.periodeAffichee}</td>
+            <td style="border: 1px solid #94a3b8; padding: 2px 4px; font-weight: bold; text-align: center; white-space: nowrap;">${r.periodeAffichee}</td>
             <td style="border: 1px solid #94a3b8; padding: 2px 4px; text-align: center; font-weight: bold;">${r.nbNuits}</td>
-            <td style="border: 1px solid #94a3b8; padding: 2px 4px; font-weight: 600;">${clientName}</td>
-            <td style="border: 1px solid #94a3b8; padding: 2px 4px;">${tel}</td>
-            <td style="border: 1px solid #94a3b8; padding: 2px 4px;">${pays}</td>
+            <td style="border: 1px solid #94a3b8; padding: 2px 4px; font-weight: 600; text-align: center;">${clientName}</td>
+            <td style="border: 1px solid #94a3b8; padding: 2px 4px; text-align: center;">${tel}</td>
+            <td style="border: 1px solid #94a3b8; padding: 2px 4px; text-align: center;">${pays}</td>
             <td style="border: 1px solid #94a3b8; padding: 2px 4px; text-align: center; font-weight: bold; color: #334155;">${kit}</td>
             <td style="border: 1px solid #94a3b8; padding: 2px 4px; text-align: center; text-transform: uppercase; ${styleRemise}">${r.remiseCle}</td>
             <td style="border: 1px solid #94a3b8; padding: 2px 4px; text-align: center; text-transform: uppercase; ${styleMenage}">${r.menage}</td>
@@ -148,6 +148,7 @@ function app() {
             @page { size: landscape; margin: 5mm; }
             body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background: white; color: black; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            table th, table td { text-align: center !important; }
           </style>
         </head>
         <body>
@@ -156,14 +157,14 @@ function app() {
               CALENDRIER ROCHER SAINT PIERRE 1H - ${nomC.toUpperCase()} - ${this.currentYear}
             </h1>
           </div>
-          <table style="width: 100%; border-collapse: collapse; font-size: 9px; text-align: left;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 9px; text-align: center;">
             <thead>
               <tr style="background-color: #1e293b; color: white; text-transform: uppercase; font-size: 9px;">
-                <th style="border: 1px solid #94a3b8; padding: 4px;">Période</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Période</th>
                 <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Nuits</th>
-                <th style="border: 1px solid #94a3b8; padding: 4px;">Client</th>
-                <th style="border: 1px solid #94a3b8; padding: 4px;">Téléphone</th>
-                <th style="border: 1px solid #94a3b8; padding: 4px;">Pays</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Client</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Téléphone</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Pays</th>
                 <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Kit Bébé</th>
                 <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Remise Clé</th>
                 <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Ménage</th>
@@ -176,14 +177,14 @@ function app() {
           <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: flex-start; font-size: 8px;">
             <table style="border-collapse: collapse; border: 1px solid #94a3b8; font-weight: bold;">
               <tr>
-                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc;">Électricien</td>
-                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">Fabien COSTA</td>
-                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">06.63.98.53.38</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc; text-align: center;">Électricien</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-align: center;">Fabien COSTA</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-align: center;">06.63.98.53.38</td>
               </tr>
               <tr>
-                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc;">Plombier</td>
-                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">William LAURENT</td>
-                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">06.67.32.38.44</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc; text-align: center;">Plombier</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-align: center;">William LAURENT</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-align: center;">06.67.32.38.44</td>
               </tr>
             </table>
             <div style="border: 1px solid #94a3b8; padding: 4px; background-color: white;">
@@ -201,7 +202,6 @@ function app() {
         </html>
       `;
 
-      // Création de l'iframe isolée
       let iframe = document.getElementById('print-iframe');
       if (!iframe) {
         iframe = document.createElement('iframe');
