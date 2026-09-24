@@ -23,6 +23,8 @@
   <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900" x-cloak>
     <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
       <div class="text-center mb-6">
+        <!-- LOGO AJOUTÉ ICI -->
+        <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-12 mx-auto mb-3 object-contain">
         <h2 class="text-xl font-bold text-slate-800">Espace Conciergerie</h2>
         <p class="text-xs text-slate-500">Rocher Saint Pierre 1H</p>
       </div>
@@ -33,7 +35,6 @@
           <input type="email" x-model="loginEmail" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
         </div>
         
-        <!-- AJOUT DE L'OEIL MAGIQUE ICI -->
         <div class="mb-6 relative">
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mot de passe</label>
           <input :type="showPassword ? 'text' : 'password'" x-model="loginPassword" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none pr-10" required>
@@ -53,6 +54,8 @@
   <div x-show="isAuthenticated" class="w-full" x-cloak>
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 p-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
+        <!-- LOGO AJOUTÉ ICI -->
+        <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-7 w-auto object-contain">
         <h1 class="text-lg font-bold tracking-wide">Rocher Saint Pierre 1H</h1>
       </div>
       <div class="flex items-center space-x-4">
@@ -65,7 +68,7 @@
       </div>
     </header>
 
-    <!-- NOUVELLE BARRE D'ONGLETS -->
+    <!-- BARRE D'ONGLETS -->
     <nav class="bg-slate-900 px-4 flex space-x-2 border-t border-slate-800">
       <button @click="tab = 'calendrier'; $nextTick(() => { if (window.lucide) window.lucide.createIcons(); })" :class="tab === 'calendrier' ? 'bg-slate-800 text-emerald-400 border-b-2 border-emerald-400' : 'text-slate-400 hover:text-white'" class="px-4 py-2 text-sm font-medium flex items-center rounded-t-lg transition">
         <i data-lucide="calendar" class="w-4 h-4 mr-2"></i> Calendrier
@@ -175,18 +178,14 @@
                 <p class="text-xs text-slate-500 mt-1" x-text="(selectedRes.nbAdulte || 1) + ' Adultes, ' + (selectedRes.nbEnfant || 0) + ' Enfants'"></p>
               </div>
               
-              <!-- SECTION OPTIONS MODIFIÉE -->
               <div class="bg-slate-50 p-3 rounded-lg border">
                 <p class="font-bold text-slate-700">Options Logement :</p>
-                <!-- Ménage: On affiche "Ménage : NON" ou "Ménage : OUI" (sans "payé" et sans explication) -->
                 <p>Ménage : <span class="font-bold uppercase" :class="selectedRes.forceMenageNon === 'oui' ? 'text-rose-600' : 'text-emerald-600'" x-text="selectedRes.forceMenageNon === 'oui' ? 'NON' : 'OUI'"></span></p>
                 <p>Kit Bébé : <span class="font-bold uppercase text-sky-600" x-text="selectedRes.kitBebe || 'NON'"></span></p>
               </div>
               
-              <!-- SECTION CONTACT MODIFIÉE -->
               <div class="bg-slate-50 p-3 rounded-lg border">
                 <p class="font-bold text-slate-700">Contact :</p>
-                <!-- Téléphone: En gras et cliquable (tel:) -->
                 <p>Téléphone : 
                   <template x-if="selectedRes.telephone">
                     <a :href="'tel:' + selectedRes.telephone" class="font-bold text-blue-600 hover:underline" x-text="selectedRes.telephone"></a>
