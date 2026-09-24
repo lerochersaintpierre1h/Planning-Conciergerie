@@ -23,7 +23,6 @@
   <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900" x-cloak>
     <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
       <div class="text-center mb-6">
-        <!-- LOGO AJOUTÉ ICI -->
         <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-12 mx-auto mb-3 object-contain">
         <h2 class="text-xl font-bold text-slate-800">Espace Conciergerie</h2>
         <p class="text-xs text-slate-500">Rocher Saint Pierre 1H</p>
@@ -54,7 +53,6 @@
   <div x-show="isAuthenticated" class="w-full" x-cloak>
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 p-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
-        <!-- LOGO AJOUTÉ ICI -->
         <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-7 w-auto object-contain">
         <h1 class="text-lg font-bold tracking-wide">Rocher Saint Pierre 1H</h1>
       </div>
@@ -121,43 +119,47 @@
         <div class="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto">
           <h2 class="text-xl font-bold text-slate-900 mb-6">Comptabilité Conciergerie — <span class="text-emerald-600" x-text="currentYear"></span></h2>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-stretch">
             <!-- Totaux Générés -->
-            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4 shadow-sm">
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col h-full">
               <h3 class="font-bold text-slate-700 border-b pb-2 mb-3 uppercase text-xs tracking-wider">Total des Prestations (Année)</h3>
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-slate-600 font-medium">Montant total ménage (<span x-text="comptaMetrics.totalMenagesConciergerie"></span>) :</span>
-                <span class="font-bold text-slate-900" x-text="formatCurrency(comptaMetrics.totalMenageEuros)"></span>
+              <div class="space-y-4 mb-4">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-slate-600 font-medium">Montant total ménage (<span x-text="comptaMetrics.totalMenagesConciergerie"></span>) :</span>
+                  <span class="font-bold text-slate-900" x-text="formatCurrency(comptaMetrics.totalMenageEuros)"></span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-slate-600 font-medium">Montant total remise clé (<span x-text="comptaMetrics.nbRemiseCles"></span>) :</span>
+                  <span class="font-bold text-slate-900" x-text="formatCurrency(comptaMetrics.totalRemiseClesEuros)"></span>
+                </div>
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-slate-600 font-medium">Montant total remise clé (<span x-text="comptaMetrics.nbRemiseCles"></span>) :</span>
-                <span class="font-bold text-slate-900" x-text="formatCurrency(comptaMetrics.totalRemiseClesEuros)"></span>
-              </div>
-              <div class="flex justify-between items-center pt-3 border-t border-slate-200 border-dashed font-extrabold text-emerald-700 text-lg">
+              <div class="mt-auto flex justify-between items-center pt-3 border-t border-slate-200 border-dashed font-extrabold text-emerald-700 text-lg">
                 <span>TOTAL À RECEVOIR :</span>
                 <span x-text="formatCurrency(comptaMetrics.coutTotalConciergerie)"></span>
               </div>
             </div>
 
             <!-- Paiements reçus (Lecture seule) -->
-            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3 shadow-sm">
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col h-full">
               <h3 class="font-bold text-slate-700 border-b pb-2 mb-3 uppercase text-xs tracking-wider">Historique des Paiements</h3>
-              <template x-for="i in [1,2,3,4]" :key="i">
-                <div class="flex justify-between items-center text-sm">
-                   <span class="text-slate-600" x-text="'Paiement ' + i + (comptaYearData['datePaiementConciergerie'+i] ? ' (le ' + formatDate(comptaYearData['datePaiementConciergerie'+i]) + ')' : '') + ' :'"></span>
-                   <span class="font-bold" :class="comptaYearData['paiementConciergerie'+i] > 0 ? 'text-slate-900' : 'text-slate-400'" x-text="formatCurrency(comptaYearData['paiementConciergerie'+i])"></span>
-                </div>
-              </template>
-              <div class="flex justify-between items-center pt-3 border-t border-slate-200 border-dashed font-extrabold text-indigo-700 text-lg">
+              <div class="space-y-3 mb-4">
+                <template x-for="i in [1,2,3,4]" :key="i">
+                  <div class="flex justify-between items-center text-sm">
+                     <span class="text-slate-600" x-text="'Paiement ' + i + (comptaYearData['datePaiementConciergerie'+i] ? ' (le ' + formatDate(comptaYearData['datePaiementConciergerie'+i]) + ')' : '') + ' :'"></span>
+                     <span class="font-bold" :class="comptaYearData['paiementConciergerie'+i] > 0 ? 'text-slate-900' : 'text-slate-400'" x-text="formatCurrency(comptaYearData['paiementConciergerie'+i])"></span>
+                  </div>
+                </template>
+              </div>
+              <div class="mt-auto flex justify-between items-center pt-3 border-t border-slate-200 border-dashed font-extrabold text-indigo-700 text-lg">
                 <span>TOTAL DÉJÀ REÇU :</span>
                 <span x-text="formatCurrency(comptaMetrics.paiementsRecus)"></span>
               </div>
             </div>
           </div>
 
-          <!-- Reste à recevoir final -->
-          <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-xl flex flex-col md:flex-row justify-between items-center shadow-md">
-             <span class="font-black text-emerald-900 uppercase text-lg mb-2 md:mb-0">Reste à recevoir :</span>
+          <!-- Reste à recevoir final (Modifié avec fond gris plus foncé) -->
+          <div class="bg-slate-200 border border-slate-300 p-6 rounded-xl flex flex-col md:flex-row justify-between items-center shadow-md">
+             <span class="font-black text-slate-800 uppercase text-lg mb-2 md:mb-0">Reste à recevoir :</span>
              <span class="font-black text-2xl" :class="comptaMetrics.resteARecevoir > 0 ? 'text-rose-600' : 'text-emerald-600'" x-text="formatCurrency(comptaMetrics.resteARecevoir)"></span>
           </div>
         </div>
