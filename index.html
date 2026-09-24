@@ -15,21 +15,12 @@
 
   <style>
     [x-cloak] { display: none !important; }
-    
-    @media print {
-      body { background: white !important; margin: 0; padding: 0; overflow: visible !important; }
-      @page { size: landscape; margin: 5mm; }
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen w-full overflow-x-hidden select-none" x-data="app()" x-init="initData()">
 
   <!-- ÉCRAN DE CONNEXION -->
-  <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900 p-4 print:hidden" x-cloak>
+  <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900 p-4" x-cloak>
     <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
       <div class="text-center mb-6">
         <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-12 mx-auto mb-3 object-contain">
@@ -59,7 +50,7 @@
   </div>
 
   <!-- APPLICATION PRINCIPALE -->
-  <div x-show="isAuthenticated" class="w-full print:hidden" x-cloak>
+  <div x-show="isAuthenticated" class="w-full" x-cloak>
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center space-x-3">
         <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-6 sm:h-7 w-auto object-contain">
@@ -216,9 +207,6 @@
       </div>
     </main>
   </div>
-
-  <!-- ZONE D'IMPRESSION INSTANTANÉE (Remplie en HTML brut par app.js) -->
-  <div id="print-zone" class="hidden print:block w-full bg-white text-black font-sans"></div>
 
   <script src="app.js"></script>
 </body>
