@@ -15,12 +15,21 @@
 
   <style>
     [x-cloak] { display: none !important; }
+    
+    @media print {
+      body { background: white !important; margin: 0; padding: 0; overflow: visible !important; }
+      @page { size: landscape; margin: 5mm; }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen w-full overflow-x-hidden select-none" x-data="app()" x-init="initData()">
 
   <!-- ÉCRAN DE CONNEXION -->
-  <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900 p-4" x-cloak>
+  <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900 p-4 print:hidden" x-cloak>
     <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
       <div class="text-center mb-6">
         <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-12 mx-auto mb-3 object-contain">
@@ -50,13 +59,19 @@
   </div>
 
   <!-- APPLICATION PRINCIPALE -->
-  <div x-show="isAuthenticated" class="w-full" x-cloak>
+  <div x-show="isAuthenticated" class="w-full print:hidden" x-cloak>
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center space-x-3">
         <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-6 sm:h-7 w-auto object-contain">
         <h1 class="text-base sm:text-lg font-bold tracking-wide">Rocher Saint Pierre 1H</h1>
       </div>
       <div class="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+        
+        <button @click="printPlanning()" class="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 hover:bg-indigo-500 p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-white transition shadow-sm" title="Imprimer le planning PDF">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span class="hidden sm:block text-sm font-medium">Export PDF</span>
+        </button>
+
         <div class="flex items-center space-x-2 bg-slate-800 p-1.5 rounded-lg border border-slate-700">
           <button @click="changeGlobalYear(-1)" class="p-1 rounded hover:bg-slate-700 text-white transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
           <span class="w-12 sm:w-14 font-extrabold text-center text-emerald-400 text-sm" x-text="currentYear"></span>
@@ -66,7 +81,6 @@
       </div>
     </header>
 
-    <!-- BARRE D'ONGLETS -->
     <nav class="bg-slate-900 px-2 sm:px-4 flex space-x-1 sm:space-x-2 border-t border-slate-800 overflow-x-auto">
       <button @click="tab = 'calendrier'; $nextTick(() => { if (window.lucide) window.lucide.createIcons(); })" :class="tab === 'calendrier' ? 'bg-slate-800 text-emerald-400 border-b-2 border-emerald-400' : 'text-slate-400 hover:text-white'" class="px-3 sm:px-4 py-2 text-sm font-medium flex items-center rounded-t-lg transition whitespace-nowrap">
         <i data-lucide="calendar" class="w-4 h-4 mr-2"></i> Calendrier
@@ -77,8 +91,6 @@
     </nav>
 
     <main class="max-w-7xl mx-auto p-3 sm:p-6 mt-2 w-full">
-      
-      <!-- ================= ONGLET CALENDRIER ================= -->
       <section x-show="tab === 'calendrier'" x-cloak>
         <div class="flex flex-wrap items-center gap-3 sm:gap-6 mb-6 px-1 sm:px-2">
           <div class="flex items-center space-x-2"><span class="w-3 h-3 sm:w-4 sm:h-4 rounded border border-emerald-500/20" style="background-color: rgba(52, 211, 153, 0.3)"></span><span class="text-xs sm:text-sm text-slate-700 font-medium">Libre</span></div>
@@ -114,7 +126,6 @@
         </div>
       </section>
 
-      <!-- ================= ONGLET COMPTABILITÉ ================= -->
       <section x-show="tab === 'comptabilite'" x-cloak>
         <div class="bg-white rounded-xl shadow p-4 sm:p-6 max-w-4xl mx-auto w-full">
           <h2 class="text-lg sm:text-xl font-bold text-slate-900 mb-6">Comptabilité Conciergerie — <span class="text-emerald-600" x-text="currentYear"></span></h2>
@@ -162,7 +173,6 @@
         </div>
       </section>
 
-      <!-- MODAL: FICHE CLIENT CONCIERGERIE -->
       <div x-show="showModalClient" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" x-cloak>
         <template x-if="selectedRes">
           <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative">
@@ -179,14 +189,8 @@
               
               <div class="bg-slate-50 p-3 rounded-lg border">
                 <p class="font-bold text-slate-700 mb-1">Options Logement :</p>
-                
-                <!-- MÉNAGE : Vert si OUI, Rouge si NON -->
                 <p>Ménage : <span class="font-bold uppercase" :class="selectedRes.forceMenageNon === 'oui' ? 'text-rose-600' : 'text-emerald-600'" x-text="selectedRes.forceMenageNon === 'oui' ? 'NON' : 'OUI'"></span></p>
-                
-                <!-- REMISE DE CLÉS : Vert si OUI, Rouge si NON -->
                 <p>Remise de clés : <span class="font-bold uppercase" :class="isPerso(selectedRes) ? 'text-rose-600' : 'text-emerald-600'" x-text="isPerso(selectedRes) ? 'NON' : 'OUI'"></span></p>
-                
-                <!-- KIT BÉBÉ : Reste bleu (sky-600) dans tous les cas -->
                 <p>Kit Bébé : <span class="font-bold uppercase text-sky-600" x-text="selectedRes.kitBebe || 'NON'"></span></p>
               </div>
               
@@ -212,6 +216,9 @@
       </div>
     </main>
   </div>
+
+  <!-- ZONE D'IMPRESSION INSTANTANÉE (Remplie en HTML brut par app.js) -->
+  <div id="print-zone" class="hidden print:block w-full bg-white text-black font-sans"></div>
 
   <script src="app.js"></script>
 </body>
