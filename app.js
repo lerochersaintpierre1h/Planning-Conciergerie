@@ -106,11 +106,10 @@ function app() {
     formatDate(dStr) { return !dStr ? '' : `${dStr.split('-')[2]}/${dStr.split('-')[1]}/${dStr.split('-')[0]}`; },
     calcNights(start, end) { return (!start || !end) ? 0 : Math.max(0, Math.round((new Date(end.split('-')[0], end.split('-')[1] - 1, end.split('-')[2]) - new Date(start.split('-')[0], start.split('-')[1] - 1, start.split('-')[2])) / (1000 * 60 * 60 * 24))); },
 
-    // --- IMPRESSION PAR INJECTION HTML DURE (INSTANTANÉE) ---
+    // --- EXPORT PDF INSTANTANÉ (VIA IFRAME ISOLÉE) ---
     printPlanning() {
-      const originalTitle = document.title;
       const nomC = (this.donnees && this.donnees.nomConciergerie) ? this.donnees.nomConciergerie.trim() : 'Conciergerie';
-      document.title = `Planning-Conciergerie-${nomC}-${this.currentYear}`;
+      const fileName = `Planning-Conciergerie-${nomC}-${this.currentYear}`;
 
       const rows = this.getPlanningConciergerieData();
       let rowsHtml = '';
@@ -139,60 +138,92 @@ function app() {
         `;
       });
 
-      const printHtml = `
-        <div style="background-color: #0f172a; color: white; text-align: center; padding: 8px; border-radius: 6px; margin-bottom: 8px;">
-          <h1 style="font-size: 11px; font-weight: bold; text-transform: uppercase; margin: 0; letter-spacing: 1px;">
-            CALENDRIER ROCHER SAINT PIERRE 1H - ${nomC.toUpperCase()} - ${this.currentYear}
-          </h1>
-        </div>
-        <table style="width: 100%; border-collapse: collapse; font-size: 9px; text-align: left; font-family: sans-serif;">
-          <thead>
-            <tr style="background-color: #1e293b; color: white; text-transform: uppercase; font-size: 9px;">
-              <th style="border: 1px solid #94a3b8; padding: 4px;">Période</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Nuits</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px;">Client</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px;">Téléphone</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px;">Pays</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Kit Bébé</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Remise Clé</th>
-              <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Ménage</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
-        <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: flex-start; font-size: 8px; font-family: sans-serif;">
-          <table style="border-collapse: collapse; border: 1px solid #94a3b8; font-weight: bold;">
-            <tr>
-              <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc;">Électricien</td>
-              <td style="border: 1px solid #94a3b8; padding: 2px 6px;">Fabien COSTA</td>
-              <td style="border: 1px solid #94a3b8; padding: 2px 6px;">06.63.98.53.38</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc;">Plombier</td>
-              <td style="border: 1px solid #94a3b8; padding: 2px 6px;">William LAURENT</td>
-              <td style="border: 1px solid #94a3b8; padding: 2px 6px;">06.67.32.38.44</td>
-            </tr>
+      const fullHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>${fileName}</title>
+          <style>
+            @page { size: landscape; margin: 5mm; }
+            body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background: white; color: black; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          </style>
+        </head>
+        <body>
+          <div style="background-color: #0f172a; color: white; text-align: center; padding: 8px; border-radius: 6px; margin-bottom: 8px;">
+            <h1 style="font-size: 11px; font-weight: bold; text-transform: uppercase; margin: 0; letter-spacing: 1px;">
+              CALENDRIER ROCHER SAINT PIERRE 1H - ${nomC.toUpperCase()} - ${this.currentYear}
+            </h1>
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 9px; text-align: left;">
+            <thead>
+              <tr style="background-color: #1e293b; color: white; text-transform: uppercase; font-size: 9px;">
+                <th style="border: 1px solid #94a3b8; padding: 4px;">Période</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Nuits</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px;">Client</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px;">Téléphone</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px;">Pays</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Kit Bébé</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Remise Clé</th>
+                <th style="border: 1px solid #94a3b8; padding: 4px; text-align: center;">Ménage</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
           </table>
-          <div style="border: 1px solid #94a3b8; padding: 4px; background-color: white;">
-            <div style="display: flex; align-items: center; margin-bottom: 2px;">
-              <span style="width: 10px; height: 10px; background-color: #f1f5f9; border: 1px solid #94a3b8; display: inline-block; margin-right: 6px;"></span>
-              <span style="font-weight: bold;">Semaine classique (samedi / samedi)</span>
-            </div>
-            <div style="display: flex; align-items: center;">
-              <span style="width: 10px; height: 10px; background-color: #cbd5e1; border: 1px solid #94a3b8; display: inline-block; margin-right: 6px;"></span>
-              <span style="font-weight: bold;">Court séjour / Date atypique</span>
+          <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: flex-start; font-size: 8px;">
+            <table style="border-collapse: collapse; border: 1px solid #94a3b8; font-weight: bold;">
+              <tr>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc;">Électricien</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">Fabien COSTA</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">06.63.98.53.38</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px; text-transform: uppercase; background-color: #f8fafc;">Plombier</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">William LAURENT</td>
+                <td style="border: 1px solid #94a3b8; padding: 2px 6px;">06.67.32.38.44</td>
+              </tr>
+            </table>
+            <div style="border: 1px solid #94a3b8; padding: 4px; background-color: white;">
+              <div style="display: flex; align-items: center; margin-bottom: 2px;">
+                <span style="width: 10px; height: 10px; background-color: #f1f5f9; border: 1px solid #94a3b8; display: inline-block; margin-right: 6px;"></span>
+                <span style="font-weight: bold;">Semaine classique (samedi / samedi)</span>
+              </div>
+              <div style="display: flex; align-items: center;">
+                <span style="width: 10px; height: 10px; background-color: #cbd5e1; border: 1px solid #94a3b8; display: inline-block; margin-right: 6px;"></span>
+                <span style="font-weight: bold;">Court séjour / Date atypique</span>
+              </div>
             </div>
           </div>
-        </div>
+        </body>
+        </html>
       `;
 
-      const zone = document.getElementById('print-zone');
-      if (zone) zone.innerHTML = printHtml;
+      // Création de l'iframe isolée
+      let iframe = document.getElementById('print-iframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'print-iframe';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+      }
 
-      window.print();
-      document.title = originalTitle;
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(fullHtml);
+      doc.close();
+
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 50);
     },
 
     getPlanningConciergerieData() {
