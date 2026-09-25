@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
   <title>Rocher Saint Pierre 1H</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,19 +19,24 @@
   <style>
     [x-cloak] { display: none !important; }
   </style>
+  
   <!-- Favicon navigateur et icône smartphone -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="favicon.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="favicon.png">
 </head>
+
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen w-full overflow-x-hidden select-none" x-data="app()" x-init="initData()">
 
   <!-- ÉCRAN DE CONNEXION -->
-  <div x-show="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-slate-900 p-4" x-cloak>
+  <div x-show="!isAuthenticated" class="min-h-screen flex flex-col items-center justify-center bg-slate-900 p-4" x-cloak>
+    
+    <!-- Logo placé sur le fond sombre, au-dessus du bloc blanc -->
+    <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-20 w-auto mb-6 object-contain">
+
     <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
       <div class="text-center mb-6">
-        <img src="logo-menu-appli.png" alt="Logo Rocher Saint Pierre" class="h-12 mx-auto mb-3 object-contain">
         <h2 class="text-xl font-bold text-slate-800">Espace Conciergerie</h2>
-        <p class="text-xs text-slate-500">Rocher Saint Pierre 1H</p>
+        <p class="text-xs text-slate-500 mt-1">Rocher Saint Pierre 1H</p>
       </div>
       
       <form @submit.prevent="login()">
@@ -129,7 +134,7 @@
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 items-stretch">
             <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col h-full w-full overflow-hidden">
-              <h3 class="font-bold text-slate-700 border-b pb-2 mb-3 uppercase text-[10px] sm:text-xs tracking-wider">Total des Prestations (Année)</h3>
+              <h3 class="font-extrabold text-slate-800 border-b pb-2 mb-3 uppercase text-sm sm:text-base tracking-wider">Total des Prestations (Année)</h3>
               <div class="space-y-4 mb-4">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
                   <span class="text-slate-600 font-medium">Ménage (<span x-text="comptaMetrics.totalMenagesConciergerie"></span>) :</span>
@@ -147,7 +152,7 @@
             </div>
 
             <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col h-full w-full overflow-hidden">
-              <h3 class="font-bold text-slate-700 border-b pb-2 mb-3 uppercase text-[10px] sm:text-xs tracking-wider">Historique des Paiements</h3>
+              <h3 class="font-extrabold text-slate-800 border-b pb-2 mb-3 uppercase text-sm sm:text-base tracking-wider">Historique des Paiements</h3>
               <div class="space-y-2 sm:space-y-3 mb-4">
                 <template x-for="i in [1,2,3,4]" :key="i">
                   <div class="flex justify-between items-center text-xs sm:text-sm">
